@@ -1,9 +1,11 @@
-import React from 'react'
-import {useNavigate} from 'react-router-dom';
+import { preview } from "../assets";
+import { getRandomPrompt } from "../utils";
+import Formfield from "../components/Formfield";
+import Loader from "../components/loader";
+import { Form, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
-import {preview} from '../utils'; 
-import {getRandomPrompt} from '../utils';
-import { FormField, Loader } from '../components';
+
 
 
 const CreatePost = () => {
@@ -18,13 +20,13 @@ const CreatePost = () => {
   const [loading, setLoading] = useState(false);
   const [generatingImg, setGeneratingImg] = useState(false);
 
-  const handleSubmit =() => {
+  const handleSubmit =async(e) => {
     e.preventDefault();
 
     if (form.prompt && form.photo) {
       setLoading(true);
       try {
-        const response = await fetch('https://dalle-clone-pi.vercel.app/api/v1/post', {
+        const response = await fetch('https://localhost:8080/api/v1/post', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -50,7 +52,7 @@ const CreatePost = () => {
     if (form.prompt) {
       try {
         setGeneratingImg(true);
-        const response = await fetch('https://dalle-clone-pi.vercel.app/api/v1/dalle', {
+        const response = await fetch('https://localhost:8080/api/v1/dalle', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
