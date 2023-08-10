@@ -1,7 +1,7 @@
 import React from 'react'
 import {useNavigate} from 'react-router-dom';
 
-// import {preview} from '../utils';
+import {preview} from '../utils'; 
 import {getRandomPrompt} from '../utils';
 import { FormField, Loader } from '../components';
 
@@ -19,12 +19,57 @@ const CreatePost = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
 
   const handleSubmit =() => {
+    e.preventDefault();
 
+    if (form.prompt && form.photo) {
+      setLoading(true);
+      try {
+        const response = await fetch('https://dalle-clone-pi.vercel.app/api/v1/post', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ...form }),
+        });
+
+        await response.json();
+        alert('Success');
+        navigate('/');
+      } catch (err) {
+        alert(err);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert('Please generate an image with proper details');
+    }
   }
 
 
   const generateImage = async () => {
-    
+    if (form.prompt) {
+      try {
+        setGeneratingImg(true);
+        const response = await fetch('https://dalle-clone-pi.vercel.app/api/v1/dalle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt: form.prompt,
+          }),
+        });
+
+        const data = await response.json();
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (err) {
+        alert(err);
+      } finally {
+        setGeneratingImg(false);
+      }
+    } else {
+      alert('Please provide proper prompt');
+    }
   };
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -114,4 +159,4 @@ const CreatePost = () => {
   )
 }
 
-export default CreatePost
+export default CreatePost;
